@@ -20,7 +20,7 @@ Proyecto de la asignatura **Ingeniería de Software II**.
 
 - **Backend:** JavaScript con [Node.js](https://nodejs.org/) y [Express](https://expressjs.com/)
 - **Frontend:** HTML, CSS y JavaScript
-- **Base de datos:** `<!-- COMPLETAR: MySQL / PostgreSQL / SQLite -->`
+- **Base de datos:** MySQL
 - **Editor:** Visual Studio Code
 - **Control de versiones:** Git y GitHub
 
@@ -38,8 +38,6 @@ Sistema_de_Gestion_de_Taller_de_Mecanica/
 
 ## Funcionalidades principales
 
-`<!-- AJUSTAR según los requerimientos del informe -->`
-
 - Gestión de clientes
 - Gestión de vehículos
 - Órdenes de trabajo y seguimiento de reparaciones
@@ -51,7 +49,7 @@ Sistema_de_Gestion_de_Taller_de_Mecanica/
 
 - [Node.js](https://nodejs.org/) (versión LTS recomendada)
 - npm (incluido con Node.js)
-- `<!-- COMPLETAR: gestor de base de datos elegido -->`
+- MySQL 8.0 o superior
 - Git
 
 ## Instalación y ejecución
@@ -70,11 +68,11 @@ Sistema_de_Gestion_de_Taller_de_Mecanica/
    npm install
    ```
 
-3. Configurar las variables de entorno: copiar `.env.example` a `.env` y completar los datos de conexión a la base de datos.
+3. Configurar las variables de entorno: 
+Crear un archivo .env dentro de la carpeta backend/ a partir del archivo .env.example y completar los datos de conexión a MySQL.
 
 4. Crear la base de datos con el script de la carpeta `database/`:
 
-   `<!-- COMPLETAR: comando o instrucciones según el gestor elegido -->`
 
 5. Iniciar el servidor:
 
@@ -82,9 +80,7 @@ Sistema_de_Gestion_de_Taller_de_Mecanica/
    npm start
    ```
 
-   `<!-- COMPLETAR: confirmar el script real en package.json y el puerto -->`
-
-6. Abrir en el navegador: `http://localhost:<!-- PUERTO -->`
+6. Abrir en el navegador: `http://localhost:PUERTO`
 
 ## Documentación
 
