@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cotizaciones - TallerGest</title>
+  <link rel="stylesheet" href="quotes.css">
+</head>
+<body class="cot-pagina">
+ 
+    <main class="cot-modulo">
+      <div class="encabezado">
+        <div>
+          <div class="migas">Cotizaciones / Nueva</div>
+          <div class="titulo" id="elCodigo">Nueva cotización</div>
+        </div>
+        <span class="badge borrador" id="elBadge">Borrador</span>
+      </div>
+ 
+      <div class="pasos" aria-label="Progreso de la cotización">
+        <span class="p activo" id="paso1">Armar</span><span class="linea"></span>
+        <span class="p" id="paso2">Enviada</span>
+      </div>
+ 
+      <section class="tarjeta">
+        <div class="fila">
+          <div class="campo">
+            <label for="cliente">Cliente</label>
+            <select id="cliente">
+              <option value="">Seleccionar cliente</option>
+              <option>Juan Pérez</option>
+              <option>María López</option>
+              <option>Carlos Ruiz</option>
+              <option>Ana Torres</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="vehiculo">Vehículo</label>
+            <select id="vehiculo">
+              <option value="">Seleccionar vehículo</option>
+              <option>Toyota Corolla</option>
+              <option>Honda Civic</option>
+              <option>Nissan Sentra</option>
+              <option>Ford Ranger</option>
+            </select>
+          </div>
+        </div>
+ 
+        <h2>Servicios y repuestos</h2>
+        <div class="lista" id="items"></div>
+ 
+        <div class="resumen">
+          <div class="totales">
+            <div><span>Subtotal</span><span id="elSubtotal">RD$ 0.00</span></div>
+            <div><span>ITBIS (18%)</span><span id="elItbis">RD$ 0.00</span></div>
+            <div class="total"><span>Total</span><span id="elTotal">RD$ 0.00</span></div>
+          </div>
+          <div class="botones">
+            <button type="button" class="btn-guardar" id="btnGuardar">Guardar borrador</button>
+            <button type="button" class="btn-enviar" id="btnEnviar">Enviar al cliente</button>
+            <button type="button" class="btn-guardar" id="btnNueva" hidden>Nueva cotización</button>
+          </div>
+        </div>
+        <div class="mensaje" id="mensaje" role="status"></div>
+      </section>
+    </main>
+ 
+  <script src="quotes.js"></script>
+  <script>
+    // Catálogo temporal. Cuando existan los módulos de Servicios y Repuestos,
+    // esta lista se carga desde el backend.
+    const CATALOGO = [
+      { descripcion: 'Cambio de aceite',      tipo: 'Servicio', costo: 1000 },
+      { descripcion: 'Filtro de aceite',      tipo: 'Repuesto', costo: 250 },
+      { descripcion: 'Pastillas de freno',    tipo: 'Repuesto', costo: 1200 },
+      { descripcion: 'Alineación y balanceo', tipo: 'Servicio', costo: 1500 },
+    ];
+ 
+    const elCliente = document.getElementById('cliente');
+    const elVehiculo = document.getElementById('vehiculo');
+    const elItems = document.getElementById('items');
+    const elMensaje = document.getElementById('mensaje');
+    const elCodigo = document.getElementById('elCodigo');
+    const elBadge = document.getElementById('elBadge');
+    const items = CATALOGO.map(() => ({ sel: false, cant: 1 }));
+    let idActual = null;
+ 
+    CATALOGO.forEach((it, i) => {
+      elItems.insertAdjacentHTML('beforeend', `
+        <div class="fila-item" data-fila="${i}">
+          <button type="button" class="check" role="checkbox" aria-checked="false"
+                  aria-label="Incluir ${escapar(it.descripcion)}"></button>
+          <div><div class="nombre">${escapar(it.descripcion)}</div><div class="tipo">${it.tipo}</div></div>
+          <div class="cantidad">
+            <button type="button" data-menos aria-label="Menos">−</button>
+            <span data-q aria-live="polite">1</span>
+            <button type="button" data-mas aria-label="Más">+</button>
+          </div>
+          <div class="precio">${formatoRD(it.costo)}</div>
+        </div>`);
+    });
+ 
+    function refrescarFila(i) {
+      const fila = elItems.querySelector(`[data-fila="${i}"]`);
+      fila.classList.toggle('sel', items[i].sel);
+      fila.querySelector('.check').setAttribute('aria-checked', String(items[i].sel));
+      fila.querySelector('[data-q]').textContent = items[i].cant;
+    }
+ 
+    function limpiarError() {
+      if (elMensaje.classList.contains('error')) {
+        elMensaje.textContent = '';
+        elMensaje.className = 'mensaje';
+      }
+    }
+    elCliente.addEventListener('change', limpiarError);
+    elVehiculo.addEventListener('change', limpiarError);
+ 
+    elItems.addEventListener('click', (e) => {
+      limpiarError();
+      const fila = e.target.closest('[data-fila]');
+      if (!fila) return;
+      const i = Number(fila.dataset.fila);
+      const menos = e.target.closest('[data-menos]');
+      const mas = e.target.closest('[data-mas]');
+      if (menos) items[i].cant = Math.max(1, items[i].cant - 1);
+      else if (mas) { items[i].cant = Math.min(99, items[i].cant + 1); items[i].sel = true; }
+      else if (e.target.closest('.cantidad')) return;
+      else items[i].sel = !items[i].sel;
+      refrescarFila(i);
+      actualizarTotales();
+    });
+ 
+    function construirCotizacion() {
+      const c = new Cotizacion(elCliente.value, elVehiculo.value);
+      c.id = idActual;
+      items.forEach((estado, i) => {
+        if (estado.sel) {
+          c.agregarDetalle(new DetalleCotizacion(CATALOGO[i].descripcion, estado.cant, CATALOGO[i].costo));
+        }
+      });
+      return c;
+    }
+ 
+    function actualizarTotales() {
+      const c = construirCotizacion();
+      document.getElementById('elSubtotal').textContent = formatoRD(c.subtotal);
+      document.getElementById('elItbis').textContent = formatoRD(c.itbis);
+      document.getElementById('elTotal').textContent = formatoRD(c.total);
+    }
+ 
+    function pintarEstado(c) {
+      elCodigo.textContent = 'COT-' + String(c.id).padStart(3, '0');
+      elBadge.textContent = c.estado === 'enviada' ? 'Enviada' : 'Borrador';
+      elBadge.className = 'badge ' + c.estado;
+      const enviada = c.estado === 'enviada';
+      document.getElementById('paso1').className = 'p ' + (enviada ? 'hecho' : 'activo');
+      document.getElementById('paso2').className = 'p ' + (enviada ? 'activo' : '');
+    }
+ 
+    // Una cotización enviada ya no se edita: se bloquea el formulario
+    function bloquear() {
+      elCliente.disabled = true;
+      elVehiculo.disabled = true;
+      elItems.classList.add('bloqueada');
+      document.getElementById('btnGuardar').disabled = true;
+      document.getElementById('btnEnviar').disabled = true;
+      document.getElementById('btnNueva').hidden = false;
+    }
+ 
+    function reiniciar() {
+      idActual = null;
+      elCliente.value = '';
+      elVehiculo.value = '';
+      elCliente.disabled = false;
+      elVehiculo.disabled = false;
+      items.forEach((estado, i) => { estado.sel = false; estado.cant = 1; refrescarFila(i); });
+      elItems.classList.remove('bloqueada');
+      document.getElementById('btnGuardar').disabled = false;
+      document.getElementById('btnEnviar').disabled = false;
+      document.getElementById('btnNueva').hidden = true;
+      elCodigo.textContent = 'Nueva cotización';
+      elBadge.textContent = 'Borrador';
+      elBadge.className = 'badge borrador';
+      document.getElementById('paso1').className = 'p activo';
+      document.getElementById('paso2').className = 'p';
+      elMensaje.textContent = '';
+      elMensaje.className = 'mensaje';
+      actualizarTotales();
+    }
+ 
+    function mostrar(texto, tipo) {
+      elMensaje.textContent = texto;
+      elMensaje.className = 'mensaje ' + tipo;
+    }
+ 
+    async function guardar(estado) {
+      try {
+        // Una cotización ya enviada no se puede modificar
+        if (idActual !== null) {
+          const existente = await CotizacionService.obtener(idActual);
+          if (existente && existente.estado !== 'borrador') {
+            return mostrar('Esta cotización ya fue enviada y no se puede modificar.', 'error');
+          }
+        }
+        const c = construirCotizacion();
+        if (!c.cliente || !c.vehiculo) return mostrar('Selecciona un cliente y un vehículo.', 'error');
+        if (c.detalles.length === 0) return mostrar('Marca al menos un servicio o repuesto.', 'error');
+ 
+        c.estado = estado;
+        const guardada = await CotizacionService.guardar(c);
+        idActual = guardada.id;
+        pintarEstado(guardada);
+ 
+        const enviada = estado === 'enviada';
+        if (enviada) bloquear();
+        elMensaje.textContent = `Cotización #${guardada.id} ${enviada ? 'enviada' : 'guardada'}. `;
+        if (enviada) {
+          const a = document.createElement('a');
+          a.href = `aprobacion.html?id=${guardada.id}`;
+          a.textContent = 'Abrir pantalla del cliente';
+          elMensaje.appendChild(a);
+        }
+        elMensaje.className = 'mensaje ok';
+      } catch (e) {
+        mostrar('No se pudo guardar: ' + e.message, 'error');
+      }
+    }
+ 
+    document.getElementById('btnGuardar').addEventListener('click', () => guardar('borrador'));
+    document.getElementById('btnEnviar').addEventListener('click', () => guardar('enviada'));
+    document.getElementById('btnNueva').addEventListener('click', reiniciar);
+  </script>
+</body>
+</html>
+ 
