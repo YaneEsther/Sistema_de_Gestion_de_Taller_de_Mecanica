@@ -1,0 +1,101 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #F2F5FA;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  color: #1F2937;
+}
+
+.contenedor {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+/* Encabezado */
+.encabezado {
+  padding: 22px 26px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  color: #fff;
+  background: #1E3A6D;
+  border-bottom: 4px solid #D18B00;
+}
+.encabezado h1 { margin: 4px 0 0; font-size: 26px; }
+.migas {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: rgba(255, 255, 255, .75);
+}
+
+/* Tarjetas */
+.tarjeta {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(30, 58, 109, .08);
+}
+.tarjeta h2 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: #1E3A6D;
+  border-left: 4px solid #D18B00;
+  padding-left: 10px;
+}
+
+/* Formulario */
+.fila { display: flex; gap: 16px; flex-wrap: wrap; }
+.campo { flex: 1 1 240px; margin-bottom: 14px; }
+.campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.campo input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #DCE3EE;
+  border-radius: 8px;
+}
+.campo input:focus { outline: 2px solid #2D5299; border-color: #2D5299; }
+
+.botones { display: flex; gap: 10px; flex-wrap: wrap; }
+button {
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.btn-principal { background: #1E3A6D; color: #fff; border: 1px solid #1E3A6D; }
+.btn-principal:hover { background: #2D5299; }
+.btn-secundario { background: #fff; color: #1E3A6D; border: 1px solid #DCE3EE; }
+.btn-secundario:hover { background: #F2F5FA; }
+
+.mensaje { min-height: 20px; margin: 12px 0 0; font-size: 14px; }
+.mensaje.ok { color: #16A34A; }
+.mensaje.error { color: #DC2626; }
+
+/* Tabla */
+.tabla { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tabla th {
+  text-align: left;
+  padding: 10px 8px;
+  background: #EEF3FB;
+  color: #1E3A6D;
+  font-size: 13px;
+}
+.tabla td { padding: 10px 8px; border-bottom: 1px solid #E9EDF2; }
+.tabla .acciones { white-space: nowrap; }
+.tabla .acciones button { padding: 6px 12px; font-size: 13px; margin-right: 6px; }
+.btn-eliminar { background: #fff; color: #DC2626; border: 1px solid #F5C2C2; }
+.btn-eliminar:hover { background: #FDE8E8; }
+
+.vacio { color: #6B7280; font-size: 14px; }
+
+/* Pantallas pequenas: la tabla se desplaza dentro de su tarjeta */
+@media (max-width: 700px) {
+  .tarjeta { overflow-x: auto; }
+  .encabezado h1 { font-size: 22px; }
+}
