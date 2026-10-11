@@ -14,8 +14,10 @@
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.4",
+    "exceljs": "^4.4.0",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "mysql2": "^3.24.4"
+    "mysql2": "^3.24.4",
+    "pdfkit": "^0.20.2"
   }
 }

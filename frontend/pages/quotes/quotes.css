@@ -1,0 +1,111 @@
+
+.cot-pagina { margin: 0; min-height: 100vh; background: linear-gradient(180deg, #EBF0F8 0%, #F7F9FC 60%) fixed; }
+ 
+.cot-modulo {
+  --azul: #1E3A6D; --azul-claro: #2D5299; --dorado: #D18B00; --gris-claro: #E9EDF2; --gris-medio: #6B7280;
+  --gris-oscuro: #1F2937; --verde: #16A34A; --rojo: #DC2626; --borde: #DCE3EE;
+  max-width: 920px; margin: 0 auto; padding: 32px 24px;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--gris-oscuro); font-variant-numeric: tabular-nums;
+}
+.cot-modulo, .cot-modulo * { box-sizing: border-box; }
+ 
+/* Encabezado */
+.cot-modulo .encabezado { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; padding: 22px 26px; color: #fff; border-radius: 20px; background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%); box-shadow: 0 12px 28px rgba(30,58,109,.25); }
+.cot-modulo .encabezado::after { content: ''; position: absolute; right: -50px; top: -70px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(209,139,0,.55), rgba(209,139,0,0) 70%); pointer-events: none; }
+.cot-modulo .encabezado > * { position: relative; z-index: 1; }
+.cot-modulo .migas { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+.cot-modulo .titulo { font-size: 26px; font-weight: 700; letter-spacing: -.01em; color: #fff; }
+.cot-modulo .badge { display: inline-flex; align-items: center; font-size: 12px; padding: 6px 14px; border-radius: 999px; font-weight: 600; }
+.cot-modulo .badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 7px; }
+.cot-modulo .badge.borrador { background: #FEF3DC; color: #8A5200; }
+.cot-modulo .badge.enviada { background: #E3EFFC; color: #0C447C; }
+.cot-modulo .badge.aprobada { background: #E3F5E1; color: #1F6B1A; }
+.cot-modulo .badge.rechazada { background: #FDE8E8; color: #9B1C1C; }
+.cot-modulo .badge.vencida { background: #ECEAE4; color: #444441; }
+ 
+/* Pasos */
+.cot-modulo .pasos { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.cot-modulo .pasos .p { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: #fff; border: 1px solid var(--borde); font-size: 13px; color: var(--gris-medio); }
+.cot-modulo .pasos .p::before { content: ''; width: 9px; height: 9px; border-radius: 50%; border: 2px solid #B6C0D1; }
+.cot-modulo .pasos .activo { background: #FFF6E3; border-color: var(--dorado); color: #7A4E00; font-weight: 600; }
+.cot-modulo .pasos .activo::before { background: var(--dorado); border-color: var(--dorado); }
+.cot-modulo .pasos .hecho { background: #EEF3FB; border-color: #C9D6EE; color: var(--azul); }
+.cot-modulo .pasos .hecho::before { background: var(--azul); border-color: var(--azul); }
+.cot-modulo .pasos .linea { width: 22px; height: 2px; border-radius: 2px; background: var(--borde); }
+ 
+/* Tarjeta */
+.cot-modulo .tarjeta { background: #fff; border-radius: 20px; padding: 28px; box-shadow: 0 10px 30px rgba(30,58,109,.08), 0 1px 3px rgba(0,0,0,.05); }
+.cot-modulo h2 { font-size: 15px; margin: 0 0 12px; color: var(--azul); border-left: 4px solid var(--dorado); border-radius: 2px; padding-left: 10px; }
+ 
+/* Formularios */
+.cot-modulo .fila { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.cot-modulo .campo { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 6px; }
+.cot-modulo label { font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--gris-medio); }
+.cot-modulo select, .cot-modulo textarea { padding: 12px 14px; border: 1px solid var(--borde); border-radius: 12px; font-size: 14px; background: #fff; font-family: inherit; color: var(--gris-oscuro); transition: border-color .15s, box-shadow .15s; }
+.cot-modulo select:focus, .cot-modulo textarea:focus { outline: none; border-color: var(--azul-claro); box-shadow: 0 0 0 4px rgba(45,82,153,.14); }
+.cot-modulo button:focus-visible, .cot-modulo a.boton:focus-visible { outline: 3px solid rgba(209,139,0,.55); outline-offset: 2px; }
+ 
+/* Servicios y repuestos */
+.cot-modulo .lista { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.cot-modulo .lista.bloqueada .fila-item { opacity: .6; pointer-events: none; }
+.cot-modulo .fila-item { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto 104px; align-items: center; gap: 16px; border: 1px solid var(--borde); border-radius: 16px; padding: 14px 18px; cursor: pointer; background: #fff; transition: transform .15s, box-shadow .15s, border-color .15s, background .15s; }
+.cot-modulo .fila-item:hover { border-color: #B8C4DC; box-shadow: 0 6px 18px rgba(30,58,109,.09); transform: translateY(-1px); }
+.cot-modulo .fila-item.sel { border-color: var(--dorado); background: linear-gradient(180deg, #FFFBF2, #FFF5E0); box-shadow: 0 6px 18px rgba(209,139,0,.16); }
+.cot-modulo .fila-item .nombre { font-size: 15px; font-weight: 600; }
+.cot-modulo .fila-item .tipo { font-size: 12px; color: var(--gris-medio); margin-top: 2px; }
+.cot-modulo .fila-item .precio { text-align: right; font-size: 15px; font-weight: 600; color: var(--azul); }
+.cot-modulo .check { width: 24px; height: 24px; padding: 0; border-radius: 50%; border: 2px solid #B6C0D1; background: #fff; display: flex; align-items: center; justify-content: center; transition: background .15s, border-color .15s; }
+.cot-modulo .check::after { content: ''; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg) translate(-1px, -1px); visibility: hidden; }
+.cot-modulo .fila-item.sel .check { background: var(--dorado); border-color: var(--dorado); }
+.cot-modulo .fila-item.sel .check::after { visibility: visible; }
+.cot-modulo .cantidad { display: flex; align-items: center; gap: 4px; border: 1px solid var(--borde); border-radius: 999px; padding: 3px; background: #F4F6FA; cursor: default; font-size: 14px; font-weight: 600; }
+.cot-modulo .cantidad span { min-width: 26px; text-align: center; }
+.cot-modulo .cantidad button { width: 28px; height: 28px; padding: 0; border-radius: 50%; background: #fff; color: var(--azul); font-size: 17px; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,.18); transition: background .15s; }
+.cot-modulo .cantidad button:hover { background: #EEF3FB; }
+ 
+/* Pantalla de aprobación */
+.cot-modulo .tabla-scroll { overflow-x: auto; border: 1px solid var(--borde); border-radius: 16px; margin-bottom: 20px; }
+.cot-modulo table { width: 100%; border-collapse: collapse; }
+.cot-modulo th, .cot-modulo td { text-align: left; padding: 12px 16px; border-bottom: 1px solid #EDF1F7; font-size: 14px; }
+.cot-modulo th { background: #F4F7FC; color: var(--azul); font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.cot-modulo tbody tr:last-child td { border-bottom: 0; }
+.cot-modulo tbody tr:hover td { background: #FAFCFF; }
+.cot-modulo .datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 22px; }
+.cot-modulo .dato { background: #F7F9FC; border: 1px solid #E6EBF3; border-radius: 14px; padding: 12px 16px; font-size: 15px; font-weight: 600; }
+.cot-modulo .dato small { display: block; margin-bottom: 2px; color: var(--gris-medio); font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+ 
+/* Resumen y botones */
+.cot-modulo .resumen { background: linear-gradient(135deg, #F1F5FB, #E6EDF8); border-radius: 18px; padding: 22px; display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+.cot-modulo .totales { width: 280px; max-width: 100%; margin-left: auto; font-size: 14px; color: var(--gris-medio); }
+.cot-modulo .resumen .totales { margin-left: 0; }
+.cot-modulo #contenido > .totales { margin-bottom: 22px; }
+.cot-modulo .totales div { display: flex; justify-content: space-between; padding: 4px 0; }
+.cot-modulo .totales .total { font-weight: 700; font-size: 24px; letter-spacing: -.01em; color: var(--azul); border-top: 2px solid var(--azul); margin-top: 8px; padding-top: 10px; }
+.cot-modulo .botones { display: flex; gap: 12px; flex-wrap: wrap; }
+.cot-modulo .tarjeta > .botones { margin-top: 20px; }
+.cot-modulo button { border: 0; border-radius: 12px; padding: 12px 22px; font-size: 14px; font-weight: 600; cursor: pointer; color: #fff; font-family: inherit; transition: transform .15s, box-shadow .15s, filter .15s; }
+.cot-modulo button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); }
+.cot-modulo button:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+.cot-modulo .btn-guardar { background: #fff; color: var(--gris-oscuro); border: 1px solid var(--borde); box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.cot-modulo .btn-enviar { background: linear-gradient(135deg, var(--azul), var(--azul-claro)); box-shadow: 0 8px 18px rgba(30,58,109,.3); }
+.cot-modulo .btn-aprobar { background: linear-gradient(135deg, #16A34A, #12803B); box-shadow: 0 8px 18px rgba(22,163,74,.28); }
+.cot-modulo .btn-rechazar { background: linear-gradient(135deg, #E23B3B, #C42222); box-shadow: 0 8px 18px rgba(220,38,38,.25); }
+.cot-modulo a.boton { display: inline-block; border-radius: 12px; padding: 12px 22px; font-size: 14px; font-weight: 600; text-decoration: none; color: #fff; background: linear-gradient(135deg, var(--azul), var(--azul-claro)); box-shadow: 0 8px 18px rgba(30,58,109,.3); }
+.cot-modulo .mensaje { margin-top: 16px; padding: 12px 16px; border-radius: 12px; display: none; font-size: 14px; }
+.cot-modulo .mensaje.ok { display: block; background: #E3F5E1; color: #1F6B1A; }
+.cot-modulo .mensaje.ok a { color: var(--azul); font-weight: 600; }
+.cot-modulo .mensaje.error { display: block; background: #FDE8E8; color: #9B1C1C; }
+.cot-modulo [hidden] { display: none !important; }
+ 
+@media (max-width: 760px) {
+  .cot-modulo { padding: 16px; }
+  .cot-modulo .tarjeta { padding: 18px; }
+  .cot-modulo .encabezado { padding: 18px; }
+  .cot-modulo .fila-item { grid-template-columns: 24px minmax(0, 1fr) auto; }
+  .cot-modulo .fila-item .precio { grid-column: 2 / 4; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cot-modulo * { transition: none !important; }
+}
+ 

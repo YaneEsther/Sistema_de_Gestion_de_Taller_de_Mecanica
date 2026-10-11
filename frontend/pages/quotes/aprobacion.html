@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aprobación del cliente - TallerGest</title>
+  <link rel="stylesheet" href="quotes.css">
+</head>
+<body class="cot-pagina">
+ 
+    <main class="cot-modulo">
+      <div id="encabezado"></div>
+      <section class="tarjeta">
+        <div id="contenido"><p>Cargando cotización...</p></div>
+        <div class="mensaje" id="mensaje" role="status"></div>
+      </section>
+    </main>
+ 
+  <script src="quotes.js"></script>
+  <script>
+    const contenido = document.getElementById('contenido');
+    const elMensaje = document.getElementById('mensaje');
+    const fechaCorta = (iso) => new Date(iso).toLocaleDateString('es-DO');
+    const ETIQUETA = { borrador: 'Borrador', enviada: 'Enviada', aprobada: 'Aprobada', rechazada: 'Rechazada', vencida: 'Vencida' };
+    let cot = null;
+ 
+    function mostrar(texto, tipo) {
+      elMensaje.textContent = texto;
+      elMensaje.className = 'mensaje ' + tipo;
+    }
+ 
+    async function responder(aprobado) {
+      // Evita doble clic mientras se procesa
+      document.querySelectorAll('.btn-aprobar, .btn-rechazar').forEach((b) => { b.disabled = true; });
+      try {
+        const obs = document.getElementById('observaciones').value.trim();
+        await CotizacionService.responder(cot.id, aprobado, obs);
+        location.reload();
+      } catch (e) {
+        mostrar(e.message, 'error');
+        try {
+          cot = (await CotizacionService.obtener(cot.id)) || cot;
+          dibujar();
+        } catch (_) { /* se deja la pantalla como está */ }
+      }
+    }
+ 
+    function dibujar() {
+      const codigo = 'COT-' + String(cot.id).padStart(3, '0');
+      // Una cotización enviada cuya vigencia ya pasó se muestra como vencida
+      const estado = cot.estado === 'enviada' && !cot.estaVigente() ? 'vencida' : cot.estado;
+ 
+      const filas = cot.detalles.map((d) => `
+        <tr>
+          <td>${escapar(d.descripcion)}</td>
+          <td>${d.cantidad}</td>
+          <td>${formatoRD(d.getSubtotal())}</td>
+        </tr>`).join('');
+ 
+      let acciones;
+      if (estado === 'enviada') {
+        acciones = `
+          <div class="campo">
+            <label for="observaciones">Observaciones del cliente</label>
+            <textarea id="observaciones" rows="3" placeholder="Escribe un comentario..."></textarea>
+          </div>
+          <div class="botones" style="margin-top:16px">
+            <button type="button" class="btn-aprobar" id="btnAprobar">✓ Aprobar</button>
+            <button type="button" class="btn-rechazar" id="btnRechazar">✕ Rechazar</button>
+          </div>`;
+      } else if (estado === 'aprobada' || estado === 'rechazada') {
+        const a = cot.aprobacion;
+        acciones = `<p><strong>Esta cotización fue ${estado}</strong> el ${fechaCorta(a.fecha)}.
+          ${a.observaciones ? '<br>Observaciones: ' + escapar(a.observaciones) : ''}</p>`;
+      } else if (estado === 'vencida') {
+        acciones = '<p><strong>Esta cotización está vencida.</strong> Pide al taller que genere una nueva.</p>';
+      } else {
+        acciones = '<p>Esta cotización todavía no ha sido enviada al cliente.</p>';
+      }
+ 
+      // Salida después de responder (o si la cotización venció)
+      const enlaces = (estado === 'aprobada' || estado === 'rechazada' || estado === 'vencida')
+        ? '<div class="botones" style="margin-top:16px"><a class="boton" href="cotizaciones.html">Nueva cotización</a></div>'
+        : '';
+ 
+      document.getElementById('encabezado').innerHTML = `
+        <div class="encabezado">
+          <div>
+            <div class="migas">Cotizaciones / Aprobación del cliente</div>
+            <div class="titulo">${codigo}</div>
+          </div>
+          <span class="badge ${estado}">${ETIQUETA[estado]}</span>
+        </div>`;
+      contenido.innerHTML = `
+        <div class="datos">
+          <div class="dato"><small>Cliente</small>${escapar(cot.cliente)}</div>
+          <div class="dato"><small>Vehículo</small>${escapar(cot.vehiculo)}</div>
+          <div class="dato"><small>Fecha</small>${fechaCorta(cot.fecha)}</div>
+          <div class="dato"><small>Vigente hasta</small>${fechaCorta(cot.vigencia)}</div>
+        </div>
+        <div class="tabla-scroll">
+          <table>
+            <thead><tr><th>Descripción</th><th>Cant.</th><th>Importe</th></tr></thead>
+            <tbody>${filas}</tbody>
+          </table>
+        </div>
+        <div class="totales">
+          <div><span>Subtotal</span><span>${formatoRD(cot.subtotal)}</span></div>
+          <div><span>ITBIS (18%)</span><span>${formatoRD(cot.itbis)}</span></div>
+          <div class="total"><span>Total</span><span>${formatoRD(cot.total)}</span></div>
+        </div>
+        ${acciones}${enlaces}`;
+ 
+      const btnA = document.getElementById('btnAprobar');
+      const btnR = document.getElementById('btnRechazar');
+      if (btnA) btnA.addEventListener('click', () => responder(true));
+      if (btnR) btnR.addEventListener('click', () => responder(false));
+    }
+ 
+    (async () => {
+      try {
+        const id = new URLSearchParams(location.search).get('id');
+        cot = await CotizacionService.obtener(id);
+        if (!cot) contenido.innerHTML = '<p>No se encontró la cotización.</p>';
+        else dibujar();
+      } catch (e) {
+        contenido.innerHTML = '<p>No se pudo cargar la cotización.</p>';
+      }
+    })();
+  </script>
+</body>
+</html>
+ 
