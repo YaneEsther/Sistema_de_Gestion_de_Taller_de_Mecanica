@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pagos — TallerGest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- CDN de Bootstrap Icons (Icon Font) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../payments/pagos.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Menu Lateral / Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="../../logos/LogoSGTM(Ingr2).jpg" alt="TallerGest Logo" class="logo-img">
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="../../index.html"><i class="bi bi-house-door-fill"></i> Inicio</a></li>
+          <li><a href="../customers/clientes.html"><i class="bi bi-people-fill"></i> Clientes</a></li>
+          <li><a href="../vehicles/vehiculos.html"><i class="bi bi-car-front-fill"></i> Vehiculos</a></li>
+          <li><a href="../work-orders/ordenes.html"><i class="bi bi-clipboard-check-fill"></i> Ordenes de trabajo</a></li>
+          <li><a href="../services/servicios.html"><i class="bi bi-tools"></i> Servicios</a></li>
+          <li><a href="../parts/repuestos.html"><i class="bi bi-box-seam-fill"></i> Repuestos</a></li>
+          <li><a href="../invoicing/facturacion.html"><i class="bi bi-receipt"></i> Facturacion</a></li>
+          <li class="active"><a href="pagos.html"><i class="bi bi-credit-card-fill"></i> Pagos</a></li>
+          <li><a href="../reports/reportes.html"><i class="bi bi-bar-chart-line-fill"></i> Reportes</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="header-title">Pagos</div>
+        <div class="header-user">
+          <div class="user-avatar"><i class="bi bi-person-circle"></i></div>
+          <span>Administrador</span>
+        </div>
+      </header>
+
+      <main class="content-area">
+        <div class="layout-grid">
+          <!-- Formulario de Registro de Pago -->
+          <section class="panel">
+            <h2>Registrar Pago</h2>
+            
+            <form id="form-pago">
+              <div class="form-group">
+                <label for="p-factura">Factura</label>
+                <select id="p-factura" required>
+                  <option value="">Seleccionar factura...</option>
+                </select>
+              </div>
+
+              <!-- Fila con Total y Estado -->
+              <div class="factura-status-bar" id="status-bar" style="display:none;">
+                <div><span>Total:</span> <strong id="lbl-total">RD$ 0.00</strong></div>
+                <div><span id="lbl-estado" class="badge">Pendiente</span></div>
+              </div>
+
+              <div class="form-group">
+                <label for="p-metodo">Metodo de pago</label>
+                <select id="p-metodo" required>
+                  <option value="Tarjeta de crédito">Tarjeta de credito</option>
+                  <option value="Efectivo">Efectivo</option>
+                  <option value="Transferencia">Transferencia</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="p-monto">Monto (RD$)</label>
+                <input id="p-monto" type="number" step="0.01" min="0.01" placeholder="RD$ 0.00" required>
+              </div>
+
+              <div class="form-group">
+                <label for="p-nota">Nota / Referencia</label>
+                <input id="p-nota" type="text" placeholder="Ej. Ref #12345 o Abono">
+              </div>
+
+              <div class="action-buttons">
+                <button type="submit" class="btn-primary"><i class="bi bi-cash-stack"></i> Registrar pago</button>
+                <button type="button" id="btn-cancelar" class="btn-outline">Cancelar</button>
+              </div>
+            </form>
+            <div id="msg-pago" class="msg"></div>
+          </section>
+
+          <!-- Tabla de Historial -->
+          <section class="panel">
+            <h2>Historial de Pagos Registrados</h2>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Factura</th>
+                    <th>Fecha</th>
+                    <th>Metodo</th>
+                    <th>Monto</th>
+                    <th>Nota</th>
+                  </tr>
+                </thead>
+                <tbody id="tabla-historial-pagos">
+                  <tr><td colspan="5" class="empty">Cargando pagos…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../payments/pagos.js"></script>
+</body>
+</html>

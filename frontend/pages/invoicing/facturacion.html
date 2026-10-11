@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facturacion — TallerGest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- CDN de Bootstrap Icons (Icon Font) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../invoicing/facturacion.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Menu Lateral / Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="../../logos/LogoSGTM(Ingr2).jpg" alt="TallerGest Logo" class="logo-img">
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="../../index.html"><i class="bi bi-house-door-fill"></i> Inicio</a></li>
+          <li><a href="../customers/clientes.html"><i class="bi bi-people-fill"></i> Clientes</a></li>
+          <li><a href="../vehicles/vehiculos.html"><i class="bi bi-car-front-fill"></i> Vehiculos</a></li>
+          <li><a href="../work-orders/ordenes.html"><i class="bi bi-clipboard-check-fill"></i> Ordenes de trabajo</a></li>
+          <li><a href="../services/servicios.html"><i class="bi bi-tools"></i> Servicios</a></li>
+          <li><a href="../parts/repuestos.html"><i class="bi bi-box-seam-fill"></i> Repuestos</a></li>
+          <li class="active"><a href="facturacion.html"><i class="bi bi-receipt"></i> Facturacion</a></li>
+          <li><a href="../payments/pagos.html"><i class="bi bi-credit-card-fill"></i> Pagos</a></li>
+          <li><a href="../reports/reportes.html"><i class="bi bi-bar-chart-line-fill"></i> Reportes</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="header-title">Facturacion</div>
+        <div class="header-user">
+          <div class="user-avatar"><i class="bi bi-person-circle"></i></div>
+          <span>Administrador</span>
+        </div>
+      </header>
+
+      <main class="content-area">
+        <div class="layout-grid">
+          <!-- Formulario de Generacion -->
+          <section class="panel">
+            <h2>Generar Factura</h2>
+            <form id="form-generar-factura">
+              <div class="form-group">
+                <label for="f-orden">Orden de trabajo</label>
+                <select id="f-orden" required>
+                  <option value="">Seleccionar orden...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="f-cliente">Cliente</label>
+                <select id="f-cliente" required>
+                  <option value="">Seleccionar cliente...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="f-metodo">Metodo de pago inicial</label>
+                <select id="f-metodo" required>
+                  <option value="">Seleccionar metodo...</option>
+                  <option value="efectivo">Efectivo</option>
+                  <option value="tarjeta">Tarjeta de credito</option>
+                  <option value="transferencia">Transferencia</option>
+                </select>
+              </div>
+
+              <div class="action-buttons">
+                <button type="submit" class="btn-primary"><i class="bi bi-check-circle"></i> Generar Factura</button>
+                <button type="button" id="btn-enviar-cliente" class="btn-outline"><i class="bi bi-send"></i> Enviar a cliente</button>
+              </div>
+            </form>
+            <div id="msg-facturacion" class="msg"></div>
+          </section>
+
+          <!-- Vista Previa / Detalle de Factura -->
+          <section class="panel preview-panel">
+            <h2>Detalle de factura</h2>
+            
+            <div class="factura-card">
+              <div class="section-title"><i class="bi bi-wrench-adjustable"></i> Servicios</div>
+              <table class="detail-table">
+                <tbody id="tabla-servicios">
+                  <tr><td colspan="2" class="empty">Selecciona una orden de trabajo</td></tr>
+                </tbody>
+              </table>
+
+              <div class="section-title"><i class="bi bi-box"></i> Repuestos</div>
+              <table class="detail-table">
+                <tbody id="tabla-repuestos">
+                  <tr><td colspan="2" class="empty">Selecciona una orden de trabajo</td></tr>
+                </tbody>
+              </table>
+
+              <div class="totals-breakdown">
+                <div class="total-row">
+                  <span>Subtotal</span>
+                  <span id="txt-subtotal">RD$ 0.00</span>
+                </div>
+                <div class="total-row">
+                  <span>ITBIS (18%)</span>
+                  <span id="txt-itbis">RD$ 0.00</span>
+                </div>
+                <div class="total-row main-total">
+                  <span>Total</span>
+                  <span id="txt-total">RD$ 0.00</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../invoicing/facturacion.js"></script>
+</body>
+</html>
