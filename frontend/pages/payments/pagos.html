@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pagos — TallerGest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Font Awesome (solo se usa para los logos de Visa / Mastercard / Amex) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../payments/pagos.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Menu Lateral / Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="../../logos/LogoSGTM(Ingr2).jpg" alt="TallerGest Logo" class="logo-img">
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="../../index.html"><i class="bi bi-house-door-fill"></i> Inicio</a></li>
+          <li><a href="../customers/clientes.html"><i class="bi bi-people-fill"></i> Clientes</a></li>
+          <li><a href="../vehicles/vehiculos.html"><i class="bi bi-car-front-fill"></i> Vehiculos</a></li>
+          <li><a href="../work-orders/ordenes.html"><i class="bi bi-clipboard-check-fill"></i> Ordenes de trabajo</a></li>
+          <li><a href="../services/servicios.html"><i class="bi bi-tools"></i> Servicios</a></li>
+          <li><a href="../parts/repuestos.html"><i class="bi bi-box-seam-fill"></i> Repuestos</a></li>
+          <li><a href="../invoicing/facturacion.html"><i class="bi bi-receipt"></i> Facturacion</a></li>
+          <li class="active"><a href="pagos.html"><i class="bi bi-credit-card-fill"></i> Pagos</a></li>
+          <li><a href="../reports/reportes.html"><i class="bi bi-bar-chart-line-fill"></i> Reportes</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="header-title">Procesamiento de Pagos</div>
+        <div class="header-user">
+          <div class="user-avatar"><i class="bi bi-person-circle"></i></div>
+          <span>Administrador</span>
+        </div>
+      </header>
+
+      <main class="content-area">
+        <div class="layout-grid">
+          <!-- Formulario de Registro de Pago -->
+          <section class="panel">
+            <h2>Registrar Pago</h2>
+            <form id="form-inicio-pago" onsubmit="return false;">
+              <div class="form-group mb-3">
+                <label for="p-factura" class="form-label">Seleccionar Factura</label>
+                <select id="p-factura" class="form-select" required>
+                  <option value="">Cargando facturas pendientes...</option>
+                </select>
+              </div>
+
+              <!-- Barra de estado de la factura -->
+              <div class="factura-status-bar" id="status-bar" style="display:none;">
+                <div><span>Monto Pendiente:</span> <strong id="lbl-total">RD$ 0.00</strong></div>
+                <div><span id="lbl-estado" class="badge badge-pendiente">Pendiente</span></div>
+              </div>
+
+              <!-- Método de pago: tarjetas con íconos de Bootstrap -->
+              <div class="form-group mb-3">
+                <label class="form-label">Metodo de Pago</label>
+                <input type="hidden" id="p-metodo">
+                <div class="metodo-grid">
+                  <button type="button" class="metodo-card" data-metodo="efectivo">
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Efectivo</span>
+                  </button>
+                  <button type="button" class="metodo-card" data-metodo="tarjeta">
+                    <i class="bi bi-credit-card-2-front-fill"></i>
+                    <span>Tarjeta</span>
+                    <small>Crédito / Débito</small>
+                  </button>
+                  <button type="button" class="metodo-card" data-metodo="transferencia">
+                    <i class="bi bi-bank"></i>
+                    <span>Transferencia</span>
+                    <small>Bancaria</small>
+                  </button>
+                  <button type="button" class="metodo-card" data-metodo="cheque">
+                    <i class="bi bi-journal-check"></i>
+                    <span>Cheque</span>
+                    <small>Bancario</small>
+                  </button>
+                </div>
+              </div>
+
+              <button type="button" id="btn-continuar-pago" class="btn-dorado" disabled>
+                <i class="bi bi-arrow-right-circle"></i> Continuar con el pago
+              </button>
+            </form>
+            <div id="msg-pago" class="msg mt-3"></div>
+          </section>
+
+          <!-- Tabla de Historial -->
+          <section class="panel">
+            <h2>Historial de Pagos Recientes</h2>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Factura</th>
+                    <th>Fecha</th>
+                    <th>Metodo</th>
+                    <th>Monto</th>
+                    <th>Detalle / Ref.</th>
+                  </tr>
+                </thead>
+                <tbody id="tabla-historial-pagos">
+                  <tr><td colspan="5" class="text-center text-muted">Cargando historial…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 1: PAGO EN EFECTIVO (Devuelta) -->
+  <!-- ========================================== -->
+  <div class="modal fade" id="modalEfectivo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title"><i class="bi bi-cash-coin text-warning"></i> Pago en Efectivo</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-info py-2">
+            <strong>Monto a Cobrar:</strong> <span id="efectivo-monto-cobrar">RD$ 0.00</span>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="efectivo-recibido">Efectivo Recibido del Cliente (RD$)</label>
+            <input type="number" id="efectivo-recibido" class="form-control form-control-lg" placeholder="Ej. 5000.00" step="0.01" min="0">
+          </div>
+          <div class="p-3 bg-light rounded text-center border">
+            <span class="text-muted d-block mb-1">Cambio / Devuelta a Entregar</span>
+            <h3 id="efectivo-devuelta" class="fw-bold text-success mb-0">RD$ 0.00</h3>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="btn-confirmar-efectivo" class="btn btn-warning fw-bold text-white">Procesar Pago</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 2: SELECCION DE TARJETA -->
+  <!-- ========================================== -->
+  <div class="modal fade" id="modalOpcionTarjeta" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title"><i class="bi bi-credit-card text-warning"></i> Procesar Tarjeta</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center py-4">
+          <div class="brand-icons mb-3" aria-label="Tarjetas aceptadas">
+            <i class="fa-brands fa-cc-visa brand-visa"></i>
+            <i class="fa-brands fa-cc-mastercard brand-mastercard"></i>
+            <i class="fa-brands fa-cc-amex brand-amex"></i>
+          </div>
+          <p class="text-muted">Seleccione como se procesara el pago con tarjeta:</p>
+          <div class="d-grid gap-3">
+            <button type="button" class="btn btn-outline-primary btn-lg p-3 text-start" id="btn-ir-verifone">
+              <i class="bi bi-upc-scan fs-3 align-middle me-2"></i>
+              <strong>Procesar con Verifone / POS</strong>
+              <small class="d-block text-muted ms-4">Ingresar numero de voucher, lote y banco.</small>
+            </button>
+            <button type="button" class="btn btn-outline-dark btn-lg p-3 text-start" id="btn-ir-cifrar">
+              <i class="bi bi-shield-lock-fill fs-3 align-middle me-2 text-warning"></i>
+              <strong>Guardar Tarjeta Cifrada</strong>
+              <small class="d-block text-muted ms-4">Registrar tarjeta para cobro directo cifrado.</small>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2A: VERIFONE -->
+  <div class="modal fade" id="modalVerifone" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title"><i class="bi bi-receipt-cutoff"></i> Datos del Voucher (Verifone)</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label" for="v-banco">Banco del POS</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-bank"></i></span>
+              <input type="text" id="v-banco" class="form-control" placeholder="Ej. BHD, Banreservas, Popular">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label class="form-label" for="v-transaccion">Numero de Transaccion</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                <input type="text" id="v-transaccion" class="form-control" placeholder="Ej. 004521">
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label" for="v-aprobacion">Codigo Aprobacion</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-patch-check-fill text-success"></i></span>
+                <input type="text" id="v-aprobacion" class="form-control" placeholder="Ej. 88412">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+          <button type="button" id="btn-confirmar-verifone" class="btn btn-primary fw-bold">Procesar Verifone</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2B: TARJETA CIFRADA -->
+  <div class="modal fade" id="modalTarjetaCifrada" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title"><i class="bi bi-shield-lock text-warning"></i> Tarjeta Cifrada</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="secure-note">
+            <i class="bi bi-shield-check"></i>
+            <span>Solo se guardan los últimos 4 dígitos. El CVV nunca se almacena.</span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="tc-titular">Nombre del Titular</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              <input type="text" id="tc-titular" class="form-control" placeholder="Como figura en la tarjeta" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="tc-numero">Numero de Tarjeta (Cifrado local)</label>
+            <div class="input-group">
+              <!-- Este ícono cambia solo según la marca (Visa / Mastercard / Amex) -->
+              <span class="input-group-text"><i id="tc-marca" class="bi bi-credit-card"></i></span>
+              <input type="text" id="tc-numero" class="form-control" placeholder="0000 0000 0000 0000"
+                     maxlength="19" inputmode="numeric" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label class="form-label" for="tc-expira">Expiracion</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                <input type="text" id="tc-expira" class="form-control" placeholder="MM/AA" maxlength="5" autocomplete="off">
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label" for="tc-cvv">CVV</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                <input type="password" id="tc-cvv" class="form-control" placeholder="***" maxlength="4" inputmode="numeric" autocomplete="off">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+          <button type="button" id="btn-confirmar-cifrada" class="btn btn-warning text-white fw-bold">
+            <i class="bi bi-lock-fill"></i> Guardar y Cobrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 3: TRANSFERENCIA BANCARIA -->
+  <!-- ========================================== -->
+  <div class="modal fade" id="modalTransferencia" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title"><i class="bi bi-bank text-warning"></i> Transferencia Bancaria</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label" for="t-banco">Banco Origen / Destino</label>
+            <input type="text" id="t-banco" class="form-control" placeholder="Ej. Popular -> Banreservas">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="t-referencia">Numero de Referencia / Confirmacion</label>
+            <input type="text" id="t-referencia" class="form-control" placeholder="Ej. REF-987654321">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="t-comprobante">Subir Comprobante / Evidencia (Imagen)</label>
+            <input type="file" id="t-comprobante" class="form-control" accept="image/*">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="btn-confirmar-transferencia" class="btn btn-warning text-white fw-bold">Confirmar Transferencia</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 4: CHEQUE BANCARIO -->
+  <!-- ========================================== -->
+  <div class="modal fade" id="modalCheque" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title"><i class="bi bi-journal-check text-warning"></i> Registro de Cheque</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label" for="ch-banco">Banco Emisor</label>
+            <input type="text" id="ch-banco" class="form-control" placeholder="Ej. Banco BHD">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="ch-numero">Numero de Cheque</label>
+            <input type="text" id="ch-numero" class="form-control" placeholder="Ej. CHK-001234">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="ch-titular">Nombre del Firmante / Titular</label>
+            <input type="text" id="ch-titular" class="form-control" placeholder="Nombre completo">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="btn-confirmar-cheque" class="btn btn-warning text-white fw-bold">Registrar Cheque</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bundle Bootstrap JS (incluye Popper para los modals) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../payments/pagos.js"></script>
+</body>
+</html>
