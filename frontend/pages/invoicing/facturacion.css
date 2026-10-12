@@ -98,3 +98,15 @@ select:focus, input:focus { border-color: var(--azul-principal); }
   border-top: 1px solid var(--gris-claro); padding-top: 8px; margin-top: 8px;
 }
 .msg { margin-top: 15px; font-size: 0.88rem; font-weight: 600; }
+/* ---------- Añadidos ---------- */
+input[readonly] { background: var(--gris-fondo); color: var(--gris-medio); cursor: default; }
+.btn-primary:disabled, .btn-outline:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary:disabled:hover { background: var(--dorado); }
+
+@media (max-width: 992px) {
+  .layout-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .content-area { padding: 16px; }
+}

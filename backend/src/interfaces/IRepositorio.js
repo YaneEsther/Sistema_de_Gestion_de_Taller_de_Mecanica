@@ -7,6 +7,10 @@ class IRepositorio {
     throw new Error("Método buscarPorId() no implementado");
   }
 
+  async buscarPor(columna, valor) {
+    throw new Error("Método buscarPor() no implementado");
+  }
+
   async listar() {
     throw new Error("Método listar() no implementado");
   }
