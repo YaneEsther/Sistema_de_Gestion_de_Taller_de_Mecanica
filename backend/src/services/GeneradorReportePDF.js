@@ -4,25 +4,25 @@ const IGeneradorReporte = require("../interfaces/IGeneradorReporte");
 
 class GeneradorReportePDF extends IGeneradorReporte {
   generar(datos, nombreArchivo) {
-    const doc = new PDFDocument();
+    return new Promise((resolve, reject) => {
+      const doc = new PDFDocument();
+      const salida = fs.createWriteStream(nombreArchivo);
 
-    doc.pipe(fs.createWriteStream(nombreArchivo));
+      salida.on("finish", () => resolve(nombreArchivo));
+      salida.on("error", reject);
+      doc.on("error", reject);
 
-    doc.fontSize(20).text("Reporte del Taller", {
-      align: "center",
+      doc.pipe(salida);
+
+      doc.fontSize(20).text("Reporte del Taller", { align: "center" });
+      doc.moveDown();
+
+      datos.forEach((item, index) => {
+        doc.fontSize(12).text(`${index + 1}. ${item.nombre} - ${item.descripcion}`);
+      });
+
+      doc.end();
     });
-
-    doc.moveDown();
-
-    datos.forEach((item, index) => {
-      doc
-        .fontSize(12)
-        .text(`${index + 1}. ${item.nombre} - ${item.descripcion}`);
-    });
-
-    doc.end();
-
-    return nombreArchivo;
   }
 }
 

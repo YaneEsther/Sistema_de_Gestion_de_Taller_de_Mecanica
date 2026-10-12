@@ -217,7 +217,6 @@ CREATE TABLE pagos (
     FOREIGN KEY (factura_id) REFERENCES facturas(id)
     ON DELETE RESTRICT
 );
-
 -- ---------------------------------------------------------------------
 -- Módulo: Usuarios y roles
 -- ---------------------------------------------------------------------
@@ -259,3 +258,33 @@ CREATE TABLE log_auditoria (
   ('admin', JSON_ARRAY('*')),
   ('recepcionista', JSON_ARRAY('clientes', 'vehiculos', 'recepciones')),
   ('mecanico', JSON_ARRAY('diagnosticos', 'ordenes_trabajo')); */
+
+-- =====================================================================
+-- Migración para el módulo Facturación y Pagos
+-- =====================================================================
+USE taller_mecanica;
+
+-- facturas: faltaban cliente_id, estado y fecha_creacion
+ALTER TABLE facturas
+  ADD COLUMN cliente_id INT NULL AFTER orden_id,
+  ADD COLUMN estado ENUM('pendiente','pagada','anulada') NOT NULL DEFAULT 'pendiente' AFTER total,
+  ADD COLUMN fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  ADD INDEX idx_facturas_estado (estado),
+  ADD INDEX idx_facturas_orden (orden_id);
+
+-- Si ya tenías facturas, completa su cliente a partir de la orden -> vehículo
+UPDATE facturas f
+JOIN ordenes_trabajo o ON o.id = f.orden_id
+JOIN vehiculos v ON v.id = o.vehiculo_id
+SET f.cliente_id = v.cliente_id
+WHERE f.cliente_id IS NULL;
+
+ALTER TABLE facturas
+  MODIFY COLUMN cliente_id INT NOT NULL,
+  ADD CONSTRAINT fk_factura_cliente
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE RESTRICT;
+
+-- pagos: el modelo también guarda fecha_creacion (viene de EntidadBase)
+ALTER TABLE pagos
+  ADD COLUMN fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  ADD INDEX idx_pagos_factura (factura_id);
